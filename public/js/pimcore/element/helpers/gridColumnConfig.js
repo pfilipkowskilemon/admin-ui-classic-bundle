@@ -675,7 +675,7 @@ pimcore.element.helpers.gridColumnConfig = {
 
         if (this.batchJobCurrent >= jobs.length) {
             this.batchProgressWin.close();
-            this.pagingtoolbar.moveFirst();
+            this.store.loadPage(this.store.currentPage);
             try {
                 var tree = pimcore.globalmanager.get("layout_object_tree").tree;
                 tree.getStore().load({
