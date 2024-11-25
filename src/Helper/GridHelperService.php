@@ -923,7 +923,6 @@ class GridHelperService
         return $response;
     }
 
-
     /**
      *
      *
@@ -983,5 +982,4 @@ class GridHelperService
 
         return '('.implode(' OR ', $allowedTypes) .')';
     }
-
 }
