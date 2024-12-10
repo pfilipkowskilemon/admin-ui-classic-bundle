@@ -949,7 +949,7 @@ class GridHelperService
         $leaf = array_pop($pathParts);
         $path = implode('/', $pathParts);
 
-        if ($onlyChildren){
+        if ($onlyChildren) {
             return '`path` NOT LIKE "' . $fullpath . '/%"';
         }
 
@@ -979,20 +979,20 @@ class GridHelperService
                 $exceptions = '';
                 if ($allowedPaths) {
                     $exceptionsConcat = '';
-                    foreach ($allowedPaths as $path){
+                    foreach ($allowedPaths as $path) {
                         if ($exceptionsConcat !== '') {
                             $exceptionsConcat.= ' OR ';
                         }
                         $exceptionsConcat.= $this->optimizedConcatLike($path);
                     }
-                    $exceptions = " OR (" . $exceptionsConcat . ")";
+                    $exceptions = ' OR (' . $exceptionsConcat . ')';
                     //if any allowed child is found, the current folder can be listed but its content is still blocked
                     $onlyChildren = true;
                 }
                 $forbiddenPathSql[] = $this->optimizedConcatNotLike($forbiddenPath, $onlyChildren) . $exceptions;
             }
             foreach ($elementPaths['allowed'] as $allowedPaths) {
-                $allowedPathSql[] = $this->optimizedConcatLike($allowedPaths );
+                $allowedPathSql[] = $this->optimizedConcatLike($allowedPaths);
             }
 
             // this is to avoid query error when implode is empty.
