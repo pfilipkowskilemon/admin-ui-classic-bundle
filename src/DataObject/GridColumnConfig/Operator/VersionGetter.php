@@ -17,8 +17,8 @@ declare(strict_types=1);
 namespace Pimcore\Bundle\AdminBundle\DataObject\GridColumnConfig\Operator;
 
 use Pimcore\Bundle\AdminBundle\DataObject\GridColumnConfig\ResultContainer;
-use Pimcore\Model\Element\ElementInterface;
 use Pimcore\Model\DataObject\Concrete;
+use Pimcore\Model\Element\ElementInterface;
 
 /**
  * @internal
@@ -30,7 +30,7 @@ final class VersionGetter extends AbstractOperator
         $result = new \stdClass();
         $result->label = $this->label;
 
-        if(!$element instanceof Concrete){
+        if (!$element instanceof Concrete) {
             // TODO: Should we handle arrays?
             return $result;
         }
@@ -46,7 +46,7 @@ final class VersionGetter extends AbstractOperator
         $valueArray = [];
 
         $latestVersion = $element->getLatestVersion(null, false);
-        if($latestVersion){
+        if ($latestVersion) {
             $element = $latestVersion->loadData();
         }
 
