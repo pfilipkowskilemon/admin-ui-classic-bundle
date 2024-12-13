@@ -402,7 +402,7 @@ class AssetController extends ElementControllerBase implements KernelControllerE
         $parentAsset = \Pimcore\Model\Asset::getById((int)$request->get('parentId'));
 
         $dir = $request->get('dir', '');
-        if ($dir){
+        if ($dir) {
             // this is for uploading folders with Drag&Drop
             // param "dir" contains the relative path of the file
             if (strpos($dir, '..') !== false) {
