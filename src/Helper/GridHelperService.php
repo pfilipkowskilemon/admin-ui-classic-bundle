@@ -929,7 +929,7 @@ class GridHelperService
     private function optimizedConcatLike(string $fullpath, string $type = 'object'): string
     {
         //special case for the root folder
-        if($fullpath === '/') {
+        if ($fullpath === '/') {
             return '`path` LIKE "/%"';
         }
 
