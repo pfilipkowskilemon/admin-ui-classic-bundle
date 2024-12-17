@@ -302,6 +302,7 @@ pimcore.object.search = Class.create(pimcore.object.helpers.gridTabAbstract, {
 
         // grid
         this.grid = Ext.create('Ext.grid.Panel', {
+            bufferedRenderer: false,
             frame: false,
             store: this.store,
             columns: gridColumns,
