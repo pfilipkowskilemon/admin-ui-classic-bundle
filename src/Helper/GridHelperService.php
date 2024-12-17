@@ -315,8 +315,8 @@ class GridHelperService
                             $fieldConditions = [];
                             foreach ($filter['value'] as $filterValue) {
                                 $brickCondition = '(' . $brickField->getFilterCondition($filterValue, $operator,
-                                    ['brickPrefix' => $brickPrefix]
-                                ) . ' AND ' . $brickType . '.fieldname = ' . $db->quote($brickFilterField) . ')';
+                                        ['brickPrefix' => $brickPrefix]
+                                    ) . ' AND ' . $brickType . '.fieldname = ' . $db->quote($brickFilterField) . ')';
                                 $fieldConditions[] = $brickCondition;
                             }
 
@@ -325,7 +325,7 @@ class GridHelperService
                             }
                         } else {
                             $brickCondition = '(' . $brickField->getFilterCondition($filter['value'], $operator,
-                                ['brickPrefix' => $brickPrefix]) . ' AND ' . $brickType . '.fieldname = ' . $db->quote($brickFilterField) . ')';
+                                    ['brickPrefix' => $brickPrefix]) . ' AND ' . $brickType . '.fieldname = ' . $db->quote($brickFilterField) . ')';
                             $conditionPartsFilters[] = $brickCondition;
                         }
                     } elseif ($field instanceof ClassDefinition\Data\UrlSlug) {
@@ -926,14 +926,15 @@ class GridHelperService
     /**
      * A more performant alternative to "CONCAT(`path`,`key`) LIKE $fullpath"
      */
-    private function optimizedConcatLike(string $fullpath): string
+    private function optimizedConcatLike(string $fullpath, string $type = 'object'): string
     {
         $pathParts = explode('/', $fullpath);
         $leaf = array_pop($pathParts);
         $path = implode('/', $pathParts);
+        $queryColumn = $type === 'asset' ? '`filename`' : '`key`';
 
         return '(
-            (`path` = "' . $path . '/" AND `key` = "' . $leaf . '")
+            (`path` = "' . $path . '/" AND ' . $queryColumn .  ' = "' . $leaf . '")
             OR
             `path` LIKE "' . $fullpath . '%"
         )';
@@ -943,18 +944,23 @@ class GridHelperService
      * A more performant alternative to "CONCAT(`path`,`key`) NOT LIKE $fullpath"
      * Set $onlyChildren to true when you want to exclude the folder/element itself
      */
-    private function optimizedConcatNotLike(string $fullpath, bool $onlyChildren = false): string
+    private function optimizedConcatNotLike(
+        string $fullpath,
+        bool $onlyChildren = false,
+        string $type = 'object'
+    ): string
     {
         $pathParts = explode('/', $fullpath);
         $leaf = array_pop($pathParts);
         $path = implode('/', $pathParts);
+        $queryColumn = $type === 'asset' ? '`filename`' : '`key`';
 
         if ($onlyChildren) {
             return '`path` NOT LIKE "' . $fullpath . '/%"';
         }
 
         return '(
-            NOT (`path` = "' . $path . '/" AND `key` = "' . $leaf . '")
+            NOT (`path` = "' . $path . '/" AND ' . $queryColumn .  ' = "' . $leaf . '")
             AND
             `path` NOT LIKE "' . $fullpath . '/%"
         )';
@@ -983,18 +989,18 @@ class GridHelperService
                         if ($exceptionsConcat !== '') {
                             $exceptionsConcat.= ' OR ';
                         }
-                        $exceptionsConcat.= $this->optimizedConcatLike($path);
+                        $exceptionsConcat.= $this->optimizedConcatLike($path, $type);
                     }
                     $exceptions = ' OR (' . $exceptionsConcat . ')';
                     //if any allowed child is found, the current folder can be listed but its content is still blocked
                     $onlyChildren = true;
                 }
                 $forbiddenPathSql[] =
-                    '(' . $this->optimizedConcatNotLike($forbiddenPath, $onlyChildren) . $exceptions . ')'
+                    '(' . $this->optimizedConcatNotLike($forbiddenPath, $onlyChildren, $type) . $exceptions . ')'
                 ;
             }
             foreach ($elementPaths['allowed'] as $allowedPaths) {
-                $allowedPathSql[] = $this->optimizedConcatLike($allowedPaths);
+                $allowedPathSql[] = $this->optimizedConcatLike($allowedPaths, $type);
             }
 
             // this is to avoid query error when implode is empty.
