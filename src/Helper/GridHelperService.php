@@ -928,6 +928,11 @@ class GridHelperService
      */
     private function optimizedConcatLike(string $fullpath, string $type = 'object'): string
     {
+        //special case for the root folder
+        if($fullpath === '/') {
+            return '`path` LIKE "/%"';
+        }
+
         $pathParts = explode('/', $fullpath);
         $leaf = array_pop($pathParts);
         $path = implode('/', $pathParts);
@@ -936,7 +941,7 @@ class GridHelperService
         return '(
             (`path` = "' . $path . '/" AND ' . $queryColumn .  ' = "' . $leaf . '")
             OR
-            `path` LIKE "' . $fullpath . '%"
+            `path` LIKE "' . $fullpath . '/%"
         )';
     }
 
